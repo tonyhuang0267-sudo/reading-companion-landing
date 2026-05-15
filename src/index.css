@@ -48,6 +48,12 @@ body {
   cursor: pointer; text-decoration: none;
   transition: background 0.2s ease;
 }
+.nav-login {
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  color: var(--text-2); text-decoration: none;
+  transition: color 0.2s ease;
+}
+.nav-login:hover { color: var(--accent); }
 .nav-cta:hover { background: var(--accent-hover); }
 
 /* ── Hero ── */
