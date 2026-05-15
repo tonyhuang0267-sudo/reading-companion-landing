@@ -72,6 +72,17 @@ export default function ReadingApp({ onLogout, username }) {
     }
   }, []);
 
+  const handleDeleteBook = async (bookId, e) => {
+    e.stopPropagation();
+    if (!confirm("Delete this book and all its conversations?")) return;
+    try {
+      await f(`${API}/books/${bookId}`, { method: "DELETE" });
+      setBooks(prev => prev.filter(b => b.id !== bookId));
+    } catch (err) {
+      console.error("Failed to delete book:", err);
+    }
+  };
+
   useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
   useEffect(() => {
@@ -643,7 +654,7 @@ export default function ReadingApp({ onLogout, username }) {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {username && (
-              <span style={{ fontSize: 13, color: P.textSec, fontWeight: 500, textTransform: "capitalize" }}>
+              <span style={{ fontSize: 13, color: P.textSec, fontWeight: 500 }}>
                 {username}
               </span>
             )}
@@ -712,6 +723,20 @@ export default function ReadingApp({ onLogout, username }) {
                       : "Start a conversation..."}
                   </div>
                 </div>
+
+                <button
+                  onClick={(e) => handleDeleteBook(b.id, e)}
+                  title="Delete book"
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    color: P.textTer, fontSize: 16, padding: 6, borderRadius: 8,
+                    flexShrink: 0, opacity: 0.4, transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "0.4"}
+                >
+                  {"×"}
+                </button>
 
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flexShrink: 0 }}>
                   {b.total_pages > 0 && b.current_page < b.total_pages && (
