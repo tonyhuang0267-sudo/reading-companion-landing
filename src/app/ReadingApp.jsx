@@ -97,6 +97,8 @@ export default function ReadingApp({ onLogout, username }) {
     }
   }, [activeChat]);
 
+  const book = activeChat ? books.find(b => b.id === activeChat) : null;
+
   useEffect(() => {
     if (!book || book.status !== "processing") return;
     const interval = setInterval(async () => {
@@ -261,7 +263,6 @@ export default function ReadingApp({ onLogout, username }) {
     }
   };
 
-  const book = activeChat ? books.find(b => b.id === activeChat) : null;
   const isEmpty = messages.length === 0;
 
   const fonts = `@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');`;
