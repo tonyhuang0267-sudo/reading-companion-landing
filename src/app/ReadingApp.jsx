@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import VoiceMode from "./VoiceMode.jsx";
+import TourGuide from "./TourGuide.jsx";
 
 const API = import.meta.env.VITE_API_URL || "/api";
 
@@ -648,7 +649,7 @@ export default function ReadingApp({ onLogout, username }) {
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: P.textTer, marginBottom: 6 }}>
               Reading Companion
             </div>
-            <h1 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 26, fontWeight: 700, margin: 0, color: P.text }}>
+            <h1 data-tour="home-header" style={{ fontFamily: "'Source Serif 4', serif", fontSize: 26, fontWeight: 700, margin: 0, color: P.text }}>
               Conversations
             </h1>
           </div>
@@ -675,6 +676,7 @@ export default function ReadingApp({ onLogout, username }) {
             {books.map((b, i) => (
               <div
                 key={b.id}
+                {...(i === 0 ? { "data-tour": "book-thread" } : {})}
                 onClick={() => setActiveChat(b.id)}
                 style={{
                   display: "flex", alignItems: "center", gap: 14,
@@ -772,6 +774,7 @@ export default function ReadingApp({ onLogout, username }) {
 
         <div style={{ padding: "12px 24px" }}>
           <div
+            data-tour="add-book"
             onClick={() => setShowAddBook(true)}
             style={{
               border: `2px dashed ${P.border}`, borderRadius: 16,
@@ -788,6 +791,29 @@ export default function ReadingApp({ onLogout, username }) {
 
         {showAddBook && <AddBookModal />}
         {showUpload && <UploadModal />}
+
+        <TourGuide
+          storageKey="rc-tour-home"
+          steps={[
+            {
+              icon: "👋",
+              title: "Welcome to Reading Companion!",
+              description: "Let's take a quick tour so you know your way around. This only takes a few seconds.",
+            },
+            ...(books.length > 0 ? [{
+              target: '[data-tour="book-thread"]',
+              placement: "bottom",
+              title: "Your Book Conversations",
+              description: "Each book is a conversation thread. Tap one to start chatting about what you've read.",
+            }] : []),
+            {
+              target: '[data-tour="add-book"]',
+              placement: "top",
+              title: "Add a Book",
+              description: "Upload a PDF or EPUB, search for a book online, or just enter the title manually.",
+            },
+          ]}
+        />
       </div>
     );
   }
@@ -821,7 +847,7 @@ export default function ReadingApp({ onLogout, username }) {
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: 15, fontWeight: 600 }}>{book?.title}</div>
-          <div style={{ fontSize: 11, color: P.textTer, display: "flex", alignItems: "center", gap: 4 }}>
+          <div data-tour="page-indicator" style={{ fontSize: 11, color: P.textTer, display: "flex", alignItems: "center", gap: 4 }}>
             {editingPage ? (
               <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                 page <input value={pageInput} onChange={e => setPageInput(e.target.value)}
@@ -880,7 +906,7 @@ export default function ReadingApp({ onLogout, username }) {
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div data-tour="quick-actions" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {GENRE_PROMPTS.map((p, i) => (
                 <button
                   key={i}
@@ -993,6 +1019,7 @@ export default function ReadingApp({ onLogout, username }) {
       }}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
           <input
+            data-tour="chat-input"
             ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -1008,6 +1035,7 @@ export default function ReadingApp({ onLogout, username }) {
             onBlur={e => e.target.style.borderColor = P.border}
           />
           <button
+            data-tour="voice-mode"
             onClick={() => setShowVoiceMode(true)}
             style={{
               width: 42, height: 42, borderRadius: "50%", border: "none",
@@ -1040,6 +1068,38 @@ export default function ReadingApp({ onLogout, username }) {
           onClose={() => { setShowVoiceMode(false); fetchMessages(activeChat); }}
         />
       )}
+
+      <TourGuide
+        storageKey="rc-tour-chat"
+        steps={[
+          {
+            target: '[data-tour="page-indicator"]',
+            placement: "bottom",
+            icon: "📖",
+            title: "Spoiler-Free Reading",
+            description: "Tap here to set your current page. The AI will only reference content up to where you are — no spoilers.",
+          },
+          ...(isEmpty ? [{
+            target: '[data-tour="quick-actions"]',
+            placement: "top",
+            title: "Quick Actions",
+            description: "Use these shortcuts to catch up on where you left off, get an explanation, or start a discussion.",
+          }] : []),
+          {
+            target: '[data-tour="chat-input"]',
+            placement: "top",
+            title: "Ask Anything",
+            description: "Type any question about what you've read. It's like texting a friend who's read the same book.",
+          },
+          {
+            target: '[data-tour="voice-mode"]',
+            placement: "top",
+            icon: "🎙",
+            title: "Voice Mode",
+            description: "Tap the mic for a hands-free voice conversation about your book.",
+          },
+        ]}
+      />
 
       <style>{`
         @keyframes fadeUp {
