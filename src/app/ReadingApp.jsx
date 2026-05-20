@@ -97,6 +97,21 @@ export default function ReadingApp({ onLogout, username }) {
     }
   }, [activeChat]);
 
+  useEffect(() => {
+    if (!book || book.status !== "processing") return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await f(`${API}/books/${book.id}/processing`);
+        const data = await res.json();
+        if (data.status === "ready") {
+          fetchBooks();
+          clearInterval(interval);
+        }
+      } catch {}
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [book?.id, book?.status]);
+
   const fetchMessages = async (bookId) => {
     try {
       const res = await f(`${API}/books/${bookId}/messages`);
@@ -308,28 +323,18 @@ export default function ReadingApp({ onLogout, username }) {
         });
         const book = await bookRes.json();
         setShowAddBook(false);
-        setUploading(true);
-        setShowUpload(book.id);
-
-        const dlRes = await f(`${API}/books/${book.id}/download-libgen`, {
+        setActiveChat(book.id);
+        await fetchBooks();
+        f(`${API}/books/${book.id}/download-libgen`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             md5: result.md5,
             extension: result.extension,
           }),
-        });
-        if (!dlRes.ok) {
-          const err = await dlRes.json();
-          alert("Download failed: " + (err.detail || "Unknown error"));
-        }
-        setShowUpload(null);
-        setUploading(false);
-        await fetchBooks();
+        }).then(() => fetchBooks()).catch(e => console.error("Download failed:", e));
       } catch (e) {
         console.error("Download failed:", e);
-        setUploading(false);
-        setShowUpload(null);
       } finally {
         setDownloading(null);
       }
@@ -366,28 +371,19 @@ export default function ReadingApp({ onLogout, username }) {
           body: JSON.stringify({ title, author, cover_emoji: emoji }),
         });
         const book = await res.json();
+        setShowAddBook(false);
+        setActiveChat(book.id);
+        await fetchBooks();
         if (selectedFile) {
-          setUploading(true);
-          setShowAddBook(false);
-          setShowUpload(book.id);
           const form = new FormData();
           form.append("file", selectedFile);
-          const uploadRes = await f(`${API}/books/${book.id}/upload`, {
+          f(`${API}/books/${book.id}/upload`, {
             method: "POST",
             body: form,
-          });
-          if (!uploadRes.ok) {
-            const err = await uploadRes.json();
-            alert("Processing failed: " + (err.detail || "Unknown error"));
-          }
-          setShowUpload(null);
-          setUploading(false);
+          }).then(() => fetchBooks()).catch(e => console.error("Processing failed:", e));
         }
-        setShowAddBook(false);
-        await fetchBooks();
       } catch (e) {
         console.error("Failed to add book:", e);
-        setUploading(false);
       }
     };
 
@@ -890,6 +886,17 @@ export default function ReadingApp({ onLogout, username }) {
         )}
 
       </div>
+
+      {book?.status === "processing" && (
+        <div style={{
+          padding: "8px 16px", background: P.accentSoft,
+          display: "flex", alignItems: "center", gap: 8,
+          fontSize: 13, color: P.accent, fontFamily: "'DM Sans', sans-serif",
+        }}>
+          <TypingDots />
+          <span>Processing book — you can start chatting while we read along</span>
+        </div>
+      )}
 
       <div style={{ flex: 1, overflow: "auto", padding: "16px 16px 8px" }}>
         {isEmpty && (
