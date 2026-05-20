@@ -1,88 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
-function useReveal(opts = {}) {
-  const ref = useRef(null)
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ob = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); ob.unobserve(el) } },
-      { threshold: 0.12, rootMargin: '0px 0px -32px 0px', ...opts }
-    )
-    ob.observe(el)
-    return () => ob.disconnect()
-  }, [])
-  return [ref, visible]
-}
-
 function wait(ms) { return new Promise(r => setTimeout(r, ms)) }
 
-/* ── SVG Icons ── */
-function SignalIcon() {
+function TypeDots() {
   return (
-    <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor">
-      <rect x="0" y="9" width="3" height="3" rx="0.5"/>
-      <rect x="4.5" y="6" width="3" height="6" rx="0.5"/>
-      <rect x="9" y="3" width="3" height="9" rx="0.5"/>
-      <rect x="13.5" y="0" width="3" height="12" rx="0.5"/>
-    </svg>
-  )
-}
-
-function WifiIcon() {
-  return (
-    <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
-      <path d="M8 9.6a1.8 1.8 0 110 3.6 1.8 1.8 0 010-3.6zM8 5.4c2.1 0 4 .86 5.37 2.25a.75.75 0 01-1.07 1.05A6.06 6.06 0 008 6.9a6.06 6.06 0 00-4.3 1.8.75.75 0 01-1.07-1.05A7.56 7.56 0 018 5.4zm0-4.2c3.18 0 6.07 1.3 8.15 3.4a.75.75 0 01-1.06 1.06A10.06 10.06 0 008 2.7a10.06 10.06 0 00-7.09 2.96A.75.75 0 01-.15 4.6 11.56 11.56 0 018 1.2z"/>
-    </svg>
-  )
-}
-
-function BatteryIcon() {
-  return (
-    <svg width="27" height="13" viewBox="0 0 27 13" fill="currentColor">
-      <rect x="0.5" y="0.5" width="23" height="12" rx="3" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.4"/>
-      <rect x="24.5" y="4" width="2" height="5" rx="1" opacity="0.4"/>
-      <rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor"/>
-    </svg>
-  )
-}
-
-function MicIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-      <line x1="12" y1="19" x2="12" y2="23"/>
-    </svg>
-  )
-}
-
-function SendIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="19" x2="12" y2="5"/>
-      <polyline points="5 12 12 5 19 12"/>
-    </svg>
-  )
-}
-
-function ChevronLeft() {
-  return (
-    <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="8 2 2 8 8 14"/>
-    </svg>
-  )
-}
-
-/* ── Typing Dots ── */
-function TypingDots() {
-  return (
-    <span style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }}>
+    <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
       {[0, 1, 2].map(i => (
         <span key={i} style={{
-          width: 7, height: 7, borderRadius: '50%',
+          width: 6, height: 6, borderRadius: '50%',
           background: 'var(--text-3)',
           animation: `dotBounce 1.2s ease infinite ${i * 0.15}s`
         }} />
@@ -91,365 +17,302 @@ function TypingDots() {
   )
 }
 
-/* ── iPhone with Static Conversations Screenshot ── */
-function PhoneMockup() {
-  const [ref, visible] = useReveal({ threshold: 0.25 })
-  const now = new Date()
-  const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: false })
-
-  return (
-    <div ref={ref} className="iphone-frame" style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0) rotate(0deg)' : 'translateY(32px) rotate(1deg)',
-      transition: 'opacity 0.8s ease, transform 0.8s ease',
-    }}>
-      <div className="iphone-screen">
-        <div className="iphone-dynamic-island" />
-        <div className="iphone-status-bar">
-          <span className="status-time">{timeStr}</span>
-          <span className="status-icons">
-            <SignalIcon />
-            <WifiIcon />
-            <BatteryIcon />
-          </span>
-        </div>
-        <div className="phone-screenshot">
-          <img src="/assets/conversations.png" alt="Reading Companion conversations" />
-        </div>
-        <div className="iphone-home-indicator">
-          <div className="iphone-home-bar" />
-        </div>
-      </div>
-    </div>
-  )
+const convos = {
+  hero: [
+    { r: 'u', t: "mr darcy's first proposal was SO bad \u{1F62D}" },
+    { r: 'a', t: "Spectacularly bad. He opens with ‘against my better judgment’ — sir, that is not the compliment you think it is. But honestly, it makes everything that comes after hit so much harder. Have you read his letter yet?" },
+    { r: 'u', t: "not yet! don't spoil it" },
+    { r: 'a', t: "Lips sealed \u{1F910} Just keep reading. You’re about to have a really good evening." },
+  ],
+  spoiler: [
+    { r: 'u', t: "wait does gatsby actually love daisy or is it just the idea of her" },
+    { r: 'a', t: "That’s a great question — but you’re on page 84, and I think the book answers it more clearly a bit later. For now, watch how he talks about her vs how he acts around her. There’s a gap there." },
+    { r: 'u', t: "ooh okay so I should pay attention to that" },
+    { r: 'a', t: "Exactly. And the green light — it’s doing more work than it seems. Keep going, you’ll see what I mean." },
+  ],
+  catchup: [
+    { r: 'u', t: "hey it's been two weeks, can you catch me up?" },
+    { r: 'a', t: "Welcome back! You left off right after the dinner scene at Baba’s house. Amir overheard something about Hassan that changes everything. Tensions were really high." },
+    { r: 'u', t: "oh right, that part was so tense" },
+    { r: 'a', t: "It really was. You were on page 102 — things are about to shift in a big way. Want to pick up from there?" },
+  ],
 }
 
-/* ── Desktop Chat Mockup (animated) ── */
-function DesktopChatMockup() {
-  const [cardRef, inView] = useReveal({ threshold: 0.2 })
-  const [messages, setMessages] = useState([])
-  const [inputText, setInputText] = useState('')
-  const [aiTyping, setAiTyping] = useState(false)
-  const startedRef = useRef(false)
-  const scrollRef = useRef(null)
+const hdrs = {
+  hero: { e: '\u{1F48C}', t: 'Pride & Prejudice', m: 'Jane Austen', p: '189' },
+  spoiler: { e: '\u{1F7E2}', t: 'The Great Gatsby', m: 'F. Scott Fitzgerald', p: '84' },
+  catchup: { e: '\u{1FA81}', t: 'The Kite Runner', m: 'Khaled Hosseini', p: '102' },
+}
 
-  const conversation = [
-    { role: 'user', text: "mr darcy's first proposal was SO bad 😭" },
-    { role: 'ai', text: "Spectacularly bad. He opens with 'against my better judgment' — sir, that is not the compliment you think it is. But honestly it makes everything that comes next hit so much harder. Have you read his letter yet?" },
-    { role: 'user', text: "not yet! don't spoil it" },
-    { role: 'ai', text: "Lips sealed 🤐 Just keep reading. You're about to have a really good evening." },
-  ]
+function ChatMockup({ convoKey }) {
+  const [msgs, setMsgs] = useState([])
+  const [inp, setInp] = useState('')
+  const [typing, setTyping] = useState(false)
+  const scrollRef = useRef(null)
+  const h = hdrs[convoKey] || hdrs.hero
 
   useEffect(() => {
-    if (!inView || startedRef.current) return
-    startedRef.current = true
-    runSequence()
-  }, [inView])
+    let cancelled = false
+    setMsgs([])
+    setInp('')
+    setTyping(false)
+    const convo = convos[convoKey]
+    if (!convo) return
+    ;(async () => {
+      await wait(600)
+      for (const m of convo) {
+        if (cancelled) return
+        if (m.r === 'u') {
+          for (let j = 1; j <= m.t.length; j++) {
+            if (cancelled) return
+            setInp(m.t.slice(0, j))
+            await wait(30 + Math.random() * 35)
+          }
+          await wait(500)
+          if (cancelled) return
+          setInp('')
+          setMsgs(p => [...p, m])
+          await wait(1000)
+        } else {
+          if (cancelled) return
+          setTyping(true)
+          await wait(Math.min(1200 + m.t.length * 4, 2500))
+          if (cancelled) return
+          setTyping(false)
+          setMsgs(p => [...p, m])
+          await wait(Math.min(1500 + m.t.length * 12, 4500))
+        }
+      }
+    })()
+    return () => { cancelled = true }
+  }, [convoKey])
 
   useEffect(() => {
     const el = scrollRef.current
     if (el) el.scrollTop = el.scrollHeight
-  }, [messages, aiTyping, inputText])
-
-  async function runSequence() {
-    await wait(800)
-    for (let i = 0; i < conversation.length; i++) {
-      const msg = conversation[i]
-      if (msg.role === 'user') {
-        for (let j = 1; j <= msg.text.length; j++) {
-          setInputText(msg.text.slice(0, j))
-          await wait(18 + Math.random() * 32)
-        }
-        await wait(400)
-        setInputText('')
-        setMessages(prev => [...prev, msg])
-        await wait(650)
-      } else {
-        setAiTyping(true)
-        await wait(Math.min(950 + msg.text.length * 4, 2100))
-        setAiTyping(false)
-        setMessages(prev => [...prev, msg])
-        await wait(500)
-      }
-    }
-  }
+  }, [msgs, typing, inp])
 
   return (
-    <div ref={cardRef} className="desktop-frame" style={{
-      opacity: inView ? 1 : 0,
-      transform: inView ? 'translateY(0) rotate(0deg)' : 'translateY(32px) rotate(-1deg)',
-      transition: 'opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s',
-    }}>
-      {/* macOS title bar */}
-      <div className="desktop-titlebar">
-        <div className="desktop-dots">
-          <span className="dot dot-red" />
-          <span className="dot dot-yellow" />
-          <span className="dot dot-green" />
+    <div className="chat">
+      <div className="ch">
+        <div className="ch-av">{h.e}</div>
+        <div style={{ flex: 1 }}>
+          <div className="ch-t">{h.t} <span className="ch-pg">pg {h.p}</span></div>
+          <div className="ch-m">{h.m}</div>
         </div>
-        <div className="desktop-titlebar-text">Reading Companion</div>
-        <div style={{ width: 52 }} />
       </div>
-
-      {/* Sidebar */}
-      <div className="desktop-body">
-        <div className="desktop-sidebar">
-          <div className="sidebar-heading">Conversations</div>
-          <div className="sidebar-item active">
-            <span className="sidebar-emoji">💌</span>
-            <div className="sidebar-item-info">
-              <div className="sidebar-item-title">Pride & Prejudice</div>
-              <div className="sidebar-item-meta">page 189 of 432</div>
-            </div>
-          </div>
-          <div className="sidebar-item">
-            <span className="sidebar-emoji">🧠</span>
-            <div className="sidebar-item-info">
-              <div className="sidebar-item-title">Atomic Habits</div>
-              <div className="sidebar-item-meta">page 64 of 306</div>
-            </div>
-          </div>
-          <div className="sidebar-item">
-            <span className="sidebar-emoji">🌊</span>
-            <div className="sidebar-item-info">
-              <div className="sidebar-item-title">The Old Man and the Sea</div>
-              <div className="sidebar-item-meta">page 89 of 127</div>
-            </div>
-          </div>
+      <div className="msgs" ref={scrollRef}>
+        {msgs.map((m, i) => (
+          <div key={`${convoKey}-${i}`} className={`msg ${m.r === 'u' ? 'msg-user' : 'msg-ai'}`}>{m.t}</div>
+        ))}
+        {typing && <div className="msg msg-ai" style={{ padding: '11px 15px' }}><TypeDots /></div>}
+      </div>
+      <div className="chat-input">
+        <div className="chat-input-text">
+          {inp
+            ? <><span>{inp}</span><span className="type-cursor" /></>
+            : <span style={{ color: 'var(--text-3)' }}>Message…</span>
+          }
         </div>
-
-        {/* Chat area */}
-        <div className="desktop-chat">
-          <div className="desktop-chat-header">
-            <div className="desktop-chat-avatar">💌</div>
-            <div>
-              <div className="desktop-chat-title">Pride & Prejudice</div>
-              <div className="desktop-chat-meta">Jane Austen · page 189 of 432</div>
-            </div>
-          </div>
-          <div className="desktop-messages" ref={scrollRef}>
-            {messages.map((m, i) => (
-              <div key={i} className={`desk-msg ${m.role === 'user' ? 'desk-msg-user' : 'desk-msg-ai'}`}>
-                {m.text}
-              </div>
-            ))}
-            {aiTyping && (
-              <div className="desk-msg desk-msg-ai desk-msg-dots">
-                <TypingDots />
-              </div>
-            )}
-          </div>
-          <div className="desktop-input-bar">
-            <div className="desktop-input">
-              {inputText ? (
-                <><span>{inputText}</span><span className="type-cursor" /></>
-              ) : (
-                <span style={{ color: 'var(--text-3)' }}>Message...</span>
-              )}
-            </div>
-            <button className="desktop-send" aria-label={inputText ? 'Send' : 'Voice'}>
-              {inputText ? <SendIcon /> : <MicIcon />}
-            </button>
-          </div>
-        </div>
+        <button className="chat-mic">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+          </svg>
+        </button>
       </div>
     </div>
   )
 }
 
-/* ── Email Form ── */
-function EmailForm({ dark = false }) {
+function EmailForm({ dark }) {
   const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [ok, setOk] = useState(false)
+  const go = ev => { ev.preventDefault(); if (email.includes('@')) setOk(true) }
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (email.includes('@')) setSubmitted(true)
-  }
-
-  if (submitted) {
+  if (ok) {
     return (
-      <div className="email-success" style={dark ? { color: '#a2d4a5' } : {}}>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <div className="ef-ok" style={dark ? { color: '#a2d4a5' } : {}}>
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="10" fill="currentColor" opacity="0.15"/>
           <path d="M6 10l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        You're in. We'll be in touch soon.
+        You're on the list.
       </div>
     )
   }
 
   return (
-    <form className="email-form" onSubmit={handleSubmit}>
-      <input
-        type="email" className="email-input"
-        placeholder="Your email address"
-        value={email} onChange={e => setEmail(e.target.value)}
-        required
-      />
-      <button type="submit" className="email-btn">Get Early Access</button>
+    <form className="ef" onSubmit={go}>
+      <input type="email" placeholder="Your email address" value={email} onChange={ev => setEmail(ev.target.value)} required />
+      <button type="submit">Get Early Access</button>
     </form>
   )
 }
 
-/* ── Features ── */
-const features = [
-  {
-    title: "It's 11pm and you need to talk about chapter 12.",
-    body: "Your book club meets Thursday. Your partner's asleep. Your friend hasn't started it yet. But you just read something you can't stop thinking about — and Reading Companion is right there, already caught up to exactly where you are."
-  },
-  {
-    title: "You pick it back up after two weeks.",
-    body: "Who was that character again? What happened at the dinner? Instead of flipping back through pages, just ask. A quick “catch me up” and you're right back in it."
-  },
-  {
-    title: "You don't want to keep reading. You want to think.",
-    body: "Sometimes a chapter deserves more than moving on. Talk about what just happened — what it meant, why it hit so hard, what the author might be doing. Not a summary. A real conversation."
-  }
-]
-
-function Feature({ title, body, delay }) {
-  const [ref, visible] = useReveal()
-  return (
-    <div ref={ref} className="feature" style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(28px)',
-      transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
-    }}>
-      <h3 className="feature-title">{title}</h3>
-      <p className="feature-body">{body}</p>
-    </div>
-  )
-}
-
-/* ── FAQ ── */
-const faqData = [
-  {
-    q: "What kind of books work?",
-    a: "Anything you can upload as a PDF or EPUB. You can also search our library to find books instantly, or add a book manually and just start talking about it."
-  },
-  {
-    q: "How does the spoiler protection work?",
-    a: "When you set your current page, the AI only accesses content up to that point. It can’t reference anything beyond where you are. Mention your page in chat — “I’m on page 200 now” — and it adjusts automatically."
-  },
-  {
-    q: "Is this like talking to ChatGPT about a book?",
-    a: "Not really. ChatGPT gives you summaries and analysis. Reading Companion gives you a conversation. It has opinions, asks you questions, and talks like someone who genuinely loved the same parts you did."
-  },
-  {
-    q: "How much does it cost?",
-    a: "We’re in early access right now. Sign up and you’ll be among the first to try it — free."
-  }
-]
-
-function FaqItem({ item, isOpen, onToggle, delay }) {
-  const [ref, visible] = useReveal()
-  return (
-    <div ref={ref} className="faq-item" style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(20px)',
-      transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
-    }}>
-      <button className="faq-q" onClick={onToggle}>
-        {item.q}
-        <svg className={`faq-arrow ${isOpen ? 'open' : ''}`}
-             viewBox="0 0 20 20" fill="none" stroke="var(--text-3)" strokeWidth="2" strokeLinecap="round">
-          <path d="M5 7.5l5 5 5-5"/>
-        </svg>
-      </button>
-      <div className={`faq-answer-wrap ${isOpen ? 'open' : ''}`}>
-        <div>
-          <div className="faq-a">{item.a}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function FAQ() {
-  const [openIdx, setOpenIdx] = useState(null)
-  const [headRef, headVisible] = useReveal()
-
-  return (
-    <section className="faq-section">
-      <h2 ref={headRef} className="faq-heading" style={{
-        opacity: headVisible ? 1 : 0,
-        transform: headVisible ? 'translateY(0)' : 'translateY(24px)',
-        transition: 'opacity 0.7s ease, transform 0.7s ease',
-      }}>Questions</h2>
-      {faqData.map((item, i) => (
-        <FaqItem
-          key={i} item={item}
-          isOpen={openIdx === i}
-          onToggle={() => setOpenIdx(openIdx === i ? null : i)}
-          delay={0.06 * (i + 1)}
-        />
-      ))}
-    </section>
-  )
-}
-
-/* ── Footer ── */
-function FooterContent() {
-  const [ref, visible] = useReveal()
-  return (
-    <div ref={ref} style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(28px)',
-      transition: 'opacity 0.7s ease, transform 0.7s ease',
-    }}>
-      <h2 className="footer-headline">Start reading with a friend.</h2>
-      <p className="footer-sub">Join the waitlist for early access.</p>
-      <EmailForm dark />
-      <p className="footer-fine">&copy; 2026 Reading Companion</p>
-    </div>
-  )
-}
-
-/* ── App ── */
 export default function LandingPage() {
+  const [activeIdx, setActiveIdx] = useState(0)
+  const sectionRefs = useRef([])
+  const darkSections = [3, 5]
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.intersectionRatio > 0.5) {
+          const i = parseInt(e.target.dataset.idx)
+          setActiveIdx(i)
+
+          const nav = document.querySelector('.nav')
+          const isDark = e.target.classList.contains('sec--dark')
+          nav.classList.toggle('dark', isDark)
+          nav.classList.toggle('vis', i > 0 && !isDark)
+
+          const sc = e.target.querySelector('.sec-content')
+          if (sc) sc.classList.add('vis')
+        }
+      })
+    }, { threshold: 0.5 })
+
+    sectionRefs.current.forEach(el => { if (el) obs.observe(el) })
+    return () => obs.disconnect()
+  }, [])
+
+  const convoForIdx = ['hero', 'spoiler', 'catchup', null, null, null]
+  const activeConvo = convoForIdx[activeIdx]
+
+  function scrollToSection(i) {
+    const el = document.querySelector(`[data-idx="${i}"]`)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <>
       <nav className="nav">
         <a href="#" className="nav-logo">Reading Companion</a>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div className="nav-right">
           <Link to="/app" className="nav-login">Log in</Link>
-          <a href="#footer-cta" className="nav-cta">Get Early Access</a>
+          <button className="nav-cta" onClick={() => scrollToSection(5)}>Get Early Access</button>
         </div>
       </nav>
 
-      <section className="hero">
-        <h1 className="hero-headline fade-up">
-          Finally, someone to talk to about your book.
-        </h1>
-        <p className="hero-sub fade-up fade-up-d1">
-          An AI who's read the same book as you. Share reactions, ask questions,
-          argue about characters — without ever getting a page ahead.
-        </p>
-        <div className="fade-up fade-up-d2">
-          <EmailForm />
+      {/* 0 — Hero */}
+      <section className="sec sec--cream" data-idx="0" ref={el => sectionRefs.current[0] = el}>
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <h1 className="hero-h fu">Someone's reading your book with you.</h1>
+            <p className="hero-p fu fu1">A companion on the exact same page — who reads at your pace, but brings the knowledge that makes every chapter richer.</p>
+            <div className="fu fu2"><EmailForm /></div>
+            <p className="hero-fine fu fu2">Free during early access</p>
+          </div>
+          <div className="fu fu3">
+            <ChatMockup convoKey={activeIdx === 0 ? 'hero' : '__stop'} />
+          </div>
+        </div>
+        <div className="scroll-hint">
+          <span>Scroll</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" strokeWidth="2" strokeLinecap="round">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+          </svg>
         </div>
       </section>
 
-      <div className="showcase">
-        <PhoneMockup />
-        <DesktopChatMockup />
-      </div>
-
-      <div className="ornament">&#9670; &#9670; &#9670;</div>
-
-      <section className="features">
-        {features.map((f, i) => (
-          <Feature key={i} title={f.title} body={f.body} delay={0.1 * i} />
-        ))}
+      {/* 1 — Spoiler-proof */}
+      <section className="sec sec--white" data-idx="1" ref={el => sectionRefs.current[1] = el}>
+        <div className="sec-content">
+          <div className="spoiler-grid">
+            <ChatMockup convoKey={activeIdx === 1 ? 'spoiler' : '__stop'} />
+            <div className="spoiler-text">
+              <div className="spoiler-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Spoiler-proof
+              </div>
+              <h2 className="spoiler-h">Always on your page. Never ahead.</h2>
+              <p className="spoiler-p">Your companion genuinely cannot access anything past where you are. Not "tries to avoid spoilers" — it's impossible by design.</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <FAQ />
+      {/* 2 — Catch me up */}
+      <section className="sec sec--cream" data-idx="2" ref={el => sectionRefs.current[2] = el}>
+        <div className="sec-content">
+          <div className="catchup-layout">
+            <h2 className="catchup-h">You pick it back up<br/>after two weeks.</h2>
+            <div className="catchup-chat">
+              <ChatMockup convoKey={activeIdx === 2 ? 'catchup' : '__stop'} />
+            </div>
+            <p className="catchup-p">Who was that character again? Just ask. A quick "catch me up" and you're right back in it.</p>
+          </div>
+        </div>
+      </section>
 
-      <div className="footer-gradient" />
-      <footer className="footer" id="footer-cta">
-        <FooterContent />
-      </footer>
+      {/* 3 — Voice mode */}
+      <section className="sec sec--dark" data-idx="3" ref={el => sectionRefs.current[3] = el}>
+        <div className="sec-content">
+          <div className="voice-layout">
+            <h2 className="voice-h">Talk, don't type.</h2>
+            <div className="voice-orb-area">
+              <div className="voice-ring" />
+              <div className="voice-ring2" />
+              <div className="voice-orb" />
+            </div>
+            <div className="voice-label">Listening…</div>
+            <p className="voice-p">Switch to voice when typing isn't enough. Like calling a friend after a chapter that won't leave you alone.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 — How it works */}
+      <section className="sec sec--white" data-idx="4" ref={el => sectionRefs.current[4] = el}>
+        <div className="sec-content">
+          <div className="steps-layout">
+            <h2 className="steps-h">Three steps to your first conversation.</h2>
+            <div className="steps-cards">
+              <div className="scard">
+                <div className="scard-n">1</div>
+                <div className="scard-t">Add a book</div>
+                <div className="scard-d">Upload, search our library, or just type the title.</div>
+              </div>
+              <div className="scard">
+                <div className="scard-n">2</div>
+                <div className="scard-t">Set your page</div>
+                <div className="scard-d">Your companion knows what you know. Nothing more.</div>
+              </div>
+              <div className="scard">
+                <div className="scard-n">3</div>
+                <div className="scard-t">Start talking</div>
+                <div className="scard-d">Text or voice. React, question, argue, think out loud.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5 — CTA / Footer */}
+      <section className="sec sec--dark" data-idx="5" ref={el => sectionRefs.current[5] = el}>
+        <div className="sec-content">
+          <div className="cta-inner foot-ef">
+            <h2 className="cta-h">Start reading<br/>with a friend.</h2>
+            <p className="cta-p">Join the waitlist for early access.</p>
+            <EmailForm dark />
+            <p className="cta-fine">&copy; 2026 Reading Companion</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Progress dots */}
+      <div className="dots">
+        {[0, 1, 2, 3, 4, 5].map(i => (
+          <button
+            key={i}
+            className={`pdot ${activeIdx === i ? 'active' : ''} ${darkSections.includes(activeIdx) ? 'dark-mode' : ''}`}
+            onClick={() => scrollToSection(i)}
+          />
+        ))}
+      </div>
     </>
   )
 }
